@@ -1,0 +1,34 @@
+SELECT				 CAD_Mercadoria.CodigoBarra, 
+						 CAD_Mercadoria.IdRapido AS CODIGORAPIDO, 
+						 CAD_Mercadoria.DescricaoCompleta, 
+						 CAD_Mercadoria.Descricao as DESCRICAORESUMIDA, 
+						 CAD_SubGrupoMercadoria.Nome AS SUBGRUPO, 
+						 CAD_Mercadoria.Observacao, 
+						 CAD_PrecoMercadoria.PrecoCalculado AS PRECOVENDA, 
+						 'PREÇO A VISTA' AS TIPOPRECOVENDA,
+						 CAD_MercadoriaEstocavelDadosEmpresa.PrecoCusto, 
+						 CAD_UnidadeVenda.Sigla AS UNIDADEVENDA, 
+						 CAD_Mercadoria.ClassificacaoFiscalNCM AS NCM, 
+						 PST_TabelaAnp.Codigo AS ANP, 
+						 FIS_ImpostoICMS.SituacaoTributaria AS CSTICMS, 
+                         FIS_ImpostoICMS.ICMSAliquota AS ICMS, 
+						 FIS_ImpostoPIS.SituacaoTributariaSaida AS CSTPISCOFINS, 
+						 FIS_EscritaFiscalDigitalContribuicoesNaturezaReceitaNaoTributada.Codigo AS NATUREZARECEITA, 
+						 FAT_CodigoFiscal_1.Codigo AS CFOPVENDAPDV, 
+                         FAT_CodigoFiscal_2.Codigo AS CFOPVENDARETAGUARDA, 
+						 FAT_CodigoFiscal.Codigo AS CFOPPADRAOCOMPRA
+FROM            FAT_CodigoFiscal RIGHT OUTER JOIN
+                         CAD_Mercadoria INNER JOIN
+                         CAD_SubGrupoMercadoria ON CAD_Mercadoria.IdSubGrupoMercadoria = CAD_SubGrupoMercadoria.Id INNER JOIN
+                         CAD_MercadoriaDadosEmpresa ON CAD_Mercadoria.Id = CAD_MercadoriaDadosEmpresa.IdMercadoria INNER JOIN
+                         CAD_PrecoMercadoria ON CAD_MercadoriaDadosEmpresa.Id = CAD_PrecoMercadoria.IdMercadoriaDadosEmpresa INNER JOIN
+                         CAD_UnidadeVenda ON CAD_Mercadoria.IdUnidadeVenda = CAD_UnidadeVenda.Id ON FAT_CodigoFiscal.TipoCodigoFiscal = CAD_MercadoriaDadosEmpresa.CodigoFiscalEntrada LEFT OUTER JOIN
+                         FAT_CodigoFiscal AS FAT_CodigoFiscal_2 ON CAD_MercadoriaDadosEmpresa.CodigoFiscalNfSaida = FAT_CodigoFiscal_2.TipoCodigoFiscal LEFT OUTER JOIN
+                         FAT_CodigoFiscal AS FAT_CodigoFiscal_1 ON CAD_MercadoriaDadosEmpresa.CodigoFiscal = FAT_CodigoFiscal_1.TipoCodigoFiscal LEFT OUTER JOIN
+                         FIS_EscritaFiscalDigitalContribuicoesNaturezaReceitaNaoTributada ON 
+                         CAD_MercadoriaDadosEmpresa.IdNaturezaReceitaNaoTributadaPisCofins = FIS_EscritaFiscalDigitalContribuicoesNaturezaReceitaNaoTributada.Id LEFT OUTER JOIN
+                         FIS_ImpostoPIS ON CAD_MercadoriaDadosEmpresa.IdImpostoPISCOFINS = FIS_ImpostoPIS.Id LEFT OUTER JOIN
+                         FIS_ImpostoICMS ON CAD_MercadoriaDadosEmpresa.IdImpostoICMS = FIS_ImpostoICMS.Id LEFT OUTER JOIN
+                         PST_TabelaAnp ON CAD_Mercadoria.Id = PST_TabelaAnp.Id LEFT OUTER JOIN
+                         CAD_MercadoriaEstocavelDadosEmpresa ON CAD_Mercadoria.Id = CAD_MercadoriaEstocavelDadosEmpresa.IdMercadoria
+WHERE        (CAD_PrecoMercadoria.Prioridade = 0) AND (CAD_Mercadoria.TipoMercadoria = 0)
