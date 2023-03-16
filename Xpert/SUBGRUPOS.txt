@@ -1,0 +1,1 @@
+select nomegrupoprodutos as descricao from grupoprodutos
